@@ -1,0 +1,18 @@
+int menu(struct Flights*, int);
+void add(struct Flights*, int);
+void show(struct Flights*, int);
+void change(struct Flights*, int);
+void del(struct Flights*, int);
+void search(struct Flights*, int);
+void print(struct Flights*, int, int);
+void sort(struct Flights*, int);
+int check(struct Flights*, int);
+void partSearch(struct Flights*, int);
+void printLine();
+void deleteEnter(struct Flights*, int, int);
+void findCharNumber(struct Flights*, int, int);
+void sortFromMin(struct Flights*, int);
+void sortFromMax(struct Flights*, int);
+void deleteByTheOption(struct Flights*, int);
+void delExact(struct Flights*, int, int);
+void rightRegister(struct Flights*, int, int);

@@ -1,0 +1,12 @@
+int textMenu();
+void add(FILE*, char*);
+void addBin(FILE*, char*);
+void show(FILE*, char*);
+void average(FILE*, char*);
+void swap(FILE*, char*);
+void multiplicity(FILE*, char*);
+void shift(FILE*, char*);
+void textFile(FILE*, char*);
+int binFile(FILE*, char*);
+void showBin(FILE*, char*);
+int binMenu();

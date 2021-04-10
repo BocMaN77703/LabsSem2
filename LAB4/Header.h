@@ -1,0 +1,17 @@
+int menu();
+void add(struct Series**);
+void print(struct Series*, int);
+void printLine();
+void deleteEnter(struct Series*);
+void rightRegister(struct Series*);
+void del(struct Series**);
+void search(struct Series*);
+void clear(struct Series**);
+void writeTextFile(struct Series*);
+void fprintLine(FILE*f);
+void write(struct Series*);
+void writeTextFileTable(struct Series*);
+void writeBinFile(struct Series*);
+void read(struct Series**);
+void readTextFile(struct Series**);
+void readBinFile(struct Series**);
