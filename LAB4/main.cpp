@@ -10,7 +10,7 @@ int main()
 		{
 		case 1:
 			add(&serial);
-			reverse(&serial);
+			//reverse(&serial);
 			break;
 		case 2:
 			print(serial, 0);
