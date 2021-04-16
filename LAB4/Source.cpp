@@ -195,13 +195,24 @@ void del(struct Series** serial)
 	if (choice == 0) return;
 	choice--;
 	struct Series* temp, *temp2, *temp3;
-	for(int i=0;i<choice-1;i++)  *serial = (*serial)->adress;
-	temp = *serial;
-	*serial = (*serial)->adress;
-	temp2 = *serial;
-	temp3 = (*serial)->adress;
-	*serial = temp;
-	(*serial)->adress = temp3;
+	if (choice != 0)
+	{
+		temp3 = *serial;
+		for (int i = 0; i < choice - 1; i++)  *serial = (*serial)->adress;
+		temp = *serial;
+		*serial = (*serial)->adress;
+		temp2 = *serial;
+		temp->adress = temp2->adress;
+		*serial = temp3;
+	}
+	else
+	{
+		temp2 = *serial;
+		*serial = (*serial)->adress;
+	}
+	//temp3 = (*serial)->adress;
+	//*serial = temp;
+	//(*serial)->adress = temp3;
 	free(temp2);
 	system("CLS");
 }
@@ -514,6 +525,7 @@ void readTextFile(struct Series** serial)
 			fsetpos(f, &check);
 			fscanf(f, "%d", &(*serial)->info.seasons);
 			flg = 0;
+			//fseek(f, 3, SEEK_CUR);
 			c = fgetc(f); c = fgetc(f); c = fgetc(f);
 		}
 		deleteEnter(*serial);
@@ -561,7 +573,7 @@ void readBinFile(struct Series** serial)
 			fsetpos(f, &check);
 			fread(&(*serial)->info.seasons, sizeof(int), 1, f);
 			fgetc(f); //fgetc(f); //fgetc(f);
-			//fseek(f, 1, SEEK_CUR);
+			//fseek(f, -2, SEEK_CUR);
 			flg = 0;
 		}
 		deleteEnter(*serial);

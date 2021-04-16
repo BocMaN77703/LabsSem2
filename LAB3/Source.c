@@ -248,8 +248,11 @@ void shift(FILE* f, char* str)
 			fwrite(&num, sizeof(int), 1, f);
 			fseek(f, end - 2 * sizeof(int), SEEK_SET);
 		} while (start < end - sizeof(int));
-		fseek(f, end - sizeof(int), SEEK_SET);
+		/*fseek(f, end - sizeof(int)+1, SEEK_SET);
+		char s;
+		fread(&s, 1, 1, f);*/
 		int s = NULL;
+		fseek(f, end - sizeof(int), SEEK_SET);
 		fwrite(&s, sizeof(int), 1, f);
 	}
 	fclose(f);
