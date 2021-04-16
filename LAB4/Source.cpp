@@ -210,9 +210,6 @@ void del(struct Series** serial)
 		temp2 = *serial;
 		*serial = (*serial)->adress;
 	}
-	//temp3 = (*serial)->adress;
-	//*serial = temp;
-	//(*serial)->adress = temp3;
 	free(temp2);
 	system("CLS");
 }
@@ -584,4 +581,35 @@ void readBinFile(struct Series** serial)
 	if (flg == 0)		*serial = (*serial)->adress;
 	fclose(f);
 	printf("Info from file is successfully read!\n");
+}
+void reverse (struct Series** serial)
+{
+	struct Series* temp = *serial;
+	struct Series* temp2 = *serial;
+	while (temp)
+	{
+		if (temp->adress == NULL)
+			*serial = temp; 
+		temp = temp->adress;
+	}
+	struct Series* temp3 = *serial; //указатель на ласт элементе
+	while (1)
+	{
+		temp = temp2; //указатель на начале
+		while (1)
+		{
+			if (temp->adress == temp3) //если элемент указывает на ласт
+			{
+				temp3->adress = temp; //теперь ласт указывает на то, что на него указывало
+				temp3 = temp3->adress; //теперь то что указывало это последнее
+				break;
+			}
+			temp = temp->adress;
+		}
+		if (temp3 == temp2) //если последний совпал с началом
+		{
+			temp3->adress = NULL;
+			break;
+		}
+	}
 }

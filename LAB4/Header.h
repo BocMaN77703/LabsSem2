@@ -15,3 +15,4 @@ void writeBinFile(struct Series*);
 void read(struct Series**);
 void readTextFile(struct Series**);
 void readBinFile(struct Series**);
+void reverse(struct Series**);
