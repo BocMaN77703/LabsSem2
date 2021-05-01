@@ -366,21 +366,7 @@ void write(struct Series* serial)
 	switch (choice)
 	{
 	case 1:
-		printf("Choose:\n1)Write as a table\n2)Write as normal text\n");
-		while (!scanf_s("%d", &choice) || (choice < 1) || (choice > 2))
-		{
-			printf("Incorrect value. Try again.\n");
-			rewind(stdin);
-		}
-		switch (choice)
-		{
-		case 1:
-			writeTextFileTable(serial);
-			break;
-		case 2:
-			writeTextFile(serial);
-			break;
-		}
+		writeTextFile(serial);
 		printf("Successfully written to the file!!!\n");
 		break;
 	case 2:
@@ -389,54 +375,18 @@ void write(struct Series* serial)
 	case 3: break;
 	}
 }
-void writeTextFileTable(struct Series* serial)
-{
-	FILE* f;
-	f = fopen("Series table.txt", "w+");
-	char table[] = "S E R I E S";
-	fprintLine(f);
-	fprintf(f, "|\t\t\t\t\t %-43s|\n", table);
-	fprintLine(f);
-	fprintf(f, "|\t%-5s|\t%-19s|\t%-5s|\t%-5s|\t%-8s|\n", "Note", "Title", "Episodes", "Seasons", "Release Date");
-	fprintLine(f);
-	int i = 1;
-	do
-	{
-		if (serial->isType == 1)
-		{
-			fprintf(f, "|\t%-5d|\t%-19s|\t%-8d|\t%-7s|\t%-12s|\n",
-				i, serial->title,
-				serial->episodes, "-",
-				serial->info.date);
-			fprintLine(f);
-		}
-		else
-		{
-			fprintf(f, "|\t%-5d|\t%-19s|\t%-8d|\t%-7d|\t%-12s|\n",
-				i, serial->title,
-				serial->episodes, serial->info.seasons,
-				"-");
-			fprintLine(f);
-		}
-		serial = serial->adress;
-		i++;
-	} while (serial);
-	fclose(f);
-	system("CLS");
-}
 void writeTextFile(struct Series* serial)
 {
-	FILE* f;
-	f = fopen("Series.txt", "w+");
+	FILE* f = fopen("Series.txt", "w");
 	do
 	{
 		if (serial->isType == 1)
 		{
-			fprintf(f, "%s\n%d\n%s\n%s\n", serial->title, serial->episodes, "-", serial->info.date);
+			fprintf(f, "%d %d %s %s\n", serial->isType, serial->episodes, serial->info.date, serial->title);
 		}
 		else
 		{
-			fprintf(f, "%s\n%d\n%d\n%s\n", serial->title,	serial->episodes, serial->info.seasons, "-");
+			fprintf(f, "%d %d %d %s\n", serial->isType, serial->episodes, serial->info.seasons, serial->title);
 		}
 		serial = serial->adress;
 	} while (serial);
@@ -445,25 +395,22 @@ void writeTextFile(struct Series* serial)
 }
 void writeBinFile(struct Series* serial)
 {
-	FILE* f;
-	f = fopen("Series.bin", "w+");
-	char s = '-';
+	FILE* f = fopen("Series.bin", "wb");
 	do
 	{
 		if (serial->isType == 1)
 		{
-			fwrite(serial->title,strlen(serial->title),1, f);
+			fwrite(serial->title, 20, 1, f);
+			fwrite(&(serial->isType), sizeof(int), 1, f);
 			fwrite(&(serial->episodes), sizeof(int), 1, f);
-			fwrite(&s, 1, 1, f);
 			fwrite(serial->info.date, strlen(serial->info.date), 1, f);
 		}
 		else
 		{
-			fwrite(serial->title, strlen(serial->title), 1, f);
+			fwrite(serial->title, 20, 1, f);
+			fwrite(&(serial->isType), sizeof(int), 1, f);
 			fwrite(&(serial->episodes), sizeof(int), 1, f);
-			fwrite(&(serial->info.seasons), sizeof(int),1 , f);
-			fwrite(&s, 1, 1, f);
-		}
+			fwrite(&(serial->info.seasons), sizeof(int),1 , f);		}
 		serial = serial->adress;
 	} while (serial);
 	fclose(f);
@@ -495,7 +442,6 @@ void readTextFile(struct Series** serial)
 	system("CLS");
 	FILE* f = fopen("Series.txt", "r");
 	struct Series* temp = *serial;
-	char c; int flg=0;
 	do
 	{
 		if (feof(f)) break;
@@ -504,33 +450,24 @@ void readTextFile(struct Series** serial)
 			printf("Not enough memory!\n");
 			return;
 		}
-		fgets((*serial)->title, 20, f);
+		fscanf(f, "%d", &(*serial)->isType);
+		fseek(f, 1, SEEK_CUR);
 		fscanf(f, "%d", &(*serial)->episodes);
-		fpos_t check;
-		fgetpos(f, &check);
-		fseek(f, 2, SEEK_CUR);
-		if (fgetc(f) == '-') (*serial)->isType = 1;
-		else (*serial)->isType = 2;
-		if ((*serial)->isType == 1)
-		{
-			fseek(f, 2, SEEK_CUR);
-			fgets((*serial)->info.date, 10, f);
-			flg = 1;
-		}
+		fseek(f, 1, SEEK_CUR);
+		if ((*serial)->isType == 1)		fgets((*serial)->info.date, 10, f);
 		else
 		{
-			fsetpos(f, &check);
 			fscanf(f, "%d", &(*serial)->info.seasons);
-			flg = 0;
-			//fseek(f, 3, SEEK_CUR);
-			c = fgetc(f); c = fgetc(f); c = fgetc(f);
+			fseek(f, 1, SEEK_CUR);
 		}
+		fgets((*serial)->title, 20, f);
 		deleteEnter(*serial);
 		rightRegister(*serial);
 		(*serial)->adress = temp;
+		if (feof(f)) break;
 		temp = *serial;
 	} while (1);
-	 if(flg==0)		*serial = (*serial)->adress;
+	*serial = (*serial)->adress;
 	fclose(f);
 	printf("Info from file is successfully read!\n");
 }
@@ -539,46 +476,35 @@ void readBinFile(struct Series** serial)
 	system("CLS");
 	FILE* f = fopen("Series.bin", "rb");
 	struct Series* temp = *serial;
-	int flg = 0;
+	fpos_t end, pos;
+	fseek(f, 0, SEEK_END);
+	fgetpos(f, &end);
+	rewind(f);
 	do
 	{
-		fpos_t check, check1;
-		if (feof(f)) break;
 		if (!(*serial = (struct Series*)calloc(1, sizeof(struct Series))))
 		{
 			printf("Not enough memory!\n");
 			return;
 		}
-		fgetpos(f, &check1);
 		fgets((*serial)->title, 20, f);
-		fsetpos(f, &check1);
-		fseek(f, strlen((*serial)->title)-1, SEEK_CUR);
-		fgetpos(f, &check);
+		fseek(f, 1, SEEK_CUR);
+		fread(&(*serial)->isType, sizeof(int), 1, f);
 		fread(&(*serial)->episodes, sizeof(int), 1, f);
-		fgetpos(f, &check);
-		char c;
-		if (c = fgetc(f) == '-') (*serial)->isType = 1;
-		else (*serial)->isType = 2;
 		if ((*serial)->isType == 1)
 		{
 			fgets((*serial)->info.date, 9, f);
-			flg = 1;
-			//fseek(f, -1, SEEK_CUR);
 		}
 		else
 		{
-			fsetpos(f, &check);
 			fread(&(*serial)->info.seasons, sizeof(int), 1, f);
-			fgetc(f); //fgetc(f); //fgetc(f);
-			//fseek(f, -2, SEEK_CUR);
-			flg = 0;
 		}
-		deleteEnter(*serial);
+		fgetpos(f, &pos);
 		rightRegister(*serial);
 		(*serial)->adress = temp;
 		temp = *serial;
+		if (pos == end) break;
 	} while (1);
-	if (flg == 0)		*serial = (*serial)->adress;
 	fclose(f);
 	printf("Info from file is successfully read!\n");
 }
