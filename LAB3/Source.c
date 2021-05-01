@@ -225,7 +225,7 @@ void multiplicity(FILE* f, char* str)
 }
 void shift(FILE* f, char* str)
 {
-	int k = 0, num;
+	int k = 0;
 	printf("Number of positions: ");
 	while (!scanf_s("%d", &k))
 	{
@@ -233,27 +233,24 @@ void shift(FILE* f, char* str)
 		printf("Incorrect value. Try again... ");
 	}
 	f = fopen(str, "r+b");
-	fpos_t start, end;
-	for (int i = 0; i < k; i++)
+	fpos_t pos;
+	for (int j = 0; j < k; j++)
 	{
-		fgetpos(f, &start);
 		fseek(f, -sizeof(int), SEEK_END);
-		do
+		fgetpos(f, &pos);
+		int last, change, i = 0;
+		fread(&last, sizeof(int), 1, f);
+		while (pos > 0)
 		{
-			fgetpos(f, &end);
-			fread(&num, sizeof(int), 1, f);
-			rewind(f);
-			end += sizeof(int);
-			fsetpos(f, &end);
-			fwrite(&num, sizeof(int), 1, f);
-			fseek(f, end - 2 * sizeof(int), SEEK_SET);
-		} while (start < end - sizeof(int));
-		/*fseek(f, end - sizeof(int)+1, SEEK_SET);
-		char s;
-		fread(&s, 1, 1, f);*/
-		int s = NULL;
-		fseek(f, end - sizeof(int), SEEK_SET);
-		fwrite(&s, sizeof(int), 1, f);
+			fseek(f, -((2 + i) * sizeof(int)), SEEK_END);
+			fgetpos(f, &pos);
+			i++;
+			fread(&change, sizeof(int), 1, f);
+			fseek(f, -(i * sizeof(int)), SEEK_END);
+			fwrite(&change, sizeof(int), 1, f);
+		}
+		fseek(f, 0, SEEK_SET);
+		fwrite(&last, sizeof(int), 1, f);
 	}
 	fclose(f);
 	showBin(f, str);
