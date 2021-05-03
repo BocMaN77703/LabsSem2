@@ -14,7 +14,7 @@ struct Series
 	int episodes;
 	union Info info;
 	int isType;
-	struct Series* adress;
+	struct Series* next;
 };
 int menu()
 {
@@ -78,7 +78,7 @@ void add(struct Series** serial)
 		}
 		deleteEnter(*serial);
 		rightRegister(*serial);
-		(*serial)->adress = temp;
+		(*serial)->next = temp;
 		temp = *serial;
 		system("CLS");
 		printf("Do you want to enter more series??? (y/n): ");
@@ -118,7 +118,7 @@ void print(struct Series* serial, int flag)
 				"-");
 			printLine();
 		}
-		serial = serial->adress;
+		serial = serial->next;
 		i++;
 	}
 	else
@@ -141,7 +141,7 @@ void print(struct Series* serial, int flag)
 					"-");
 				printLine();
 			}
-			serial = serial->adress;
+			serial = serial->next;
 			i++;
 		} while (serial);
 	}
@@ -158,7 +158,7 @@ void deleteEnter(struct Series* serial)
 {
 		serial->title[strlen(serial->title) - 1] = '\0';
 		if (serial->isType == 1) serial->info.date[strlen(serial->info.date) - 1] = '\0';
-		serial = serial->adress;
+		serial = serial->next;
 }
 void rightRegister(struct Series* serial)
 {
@@ -198,17 +198,17 @@ void del(struct Series** serial)
 	if (choice != 0)
 	{
 		temp3 = *serial;
-		for (int i = 0; i < choice - 1; i++)  *serial = (*serial)->adress;
+		for (int i = 0; i < choice - 1; i++)  *serial = (*serial)->next;
 		temp = *serial;
-		*serial = (*serial)->adress;
+		*serial = (*serial)->next;
 		temp2 = *serial;
-		temp->adress = temp2->adress;
+		temp->next = temp2->next;
 		*serial = temp3;
 	}
 	else
 	{
 		temp2 = *serial;
-		*serial = (*serial)->adress;
+		*serial = (*serial)->next;
 	}
 	free(temp2);
 	system("CLS");
@@ -258,7 +258,7 @@ void search(struct Series* serial)
 					flag = 1;
 				}
 			}
-			serial = serial->adress;
+			serial = serial->next;
 		}while (serial);
 		break;
 	case 2:
@@ -276,7 +276,7 @@ void search(struct Series* serial)
 				flag = 1;
 				break;
 			}
-			serial = serial->adress;
+			serial = serial->next;
 		} while (serial);
 		break;
 	case 3:
@@ -287,7 +287,7 @@ void search(struct Series* serial)
 		str[strlen(str) - 1] = '\0';
 		do
 		{
-			if (serial->isType != 1)	serial = serial->adress;
+			if (serial->isType != 1)	serial = serial->next;
 			int temp = 0;
 			if (strlen(serial->info.date) == strlen(str))
 			{
@@ -302,7 +302,7 @@ void search(struct Series* serial)
 					flag = 1;
 				}
 			}
-			serial = serial->adress;
+			serial = serial->next;
 		} while (serial);
 		break;
 	case 4:
@@ -321,7 +321,7 @@ void search(struct Series* serial)
 				flag = 1;
 				break;
 			}
-			serial = serial->adress;
+			serial = serial->next;
 		} while (serial);
 		break;
 	case 5:
@@ -337,7 +337,7 @@ void clear(struct Series** serial)
 	{
 		struct Series* temp;
 		temp = *serial;
-		*serial = (*serial)->adress;
+		*serial = (*serial)->next;
 		free(temp);
 	}
 }
@@ -380,7 +380,7 @@ void writeTextFile(struct Series* serial)
 		{
 			fprintf(f, "%d %d %d %s\n", serial->isType, serial->episodes, serial->info.seasons, serial->title);
 		}
-		serial = serial->adress;
+		serial = serial->next;
 	} while (serial);
 	fclose(f);
 	system("CLS");
@@ -403,7 +403,7 @@ void writeBinFile(struct Series* serial)
 			fwrite(&(serial->isType), sizeof(int), 1, f);
 			fwrite(&(serial->episodes), sizeof(int), 1, f);
 			fwrite(&(serial->info.seasons), sizeof(int),1 , f);		}
-		serial = serial->adress;
+		serial = serial->next;
 	} while (serial);
 	fclose(f);
 	system("CLS");
@@ -455,11 +455,11 @@ void readTextFile(struct Series** serial)
 		fgets((*serial)->title, 20, f);
 		deleteEnter(*serial);
 		rightRegister(*serial);
-		(*serial)->adress = temp;
+		(*serial)->next = temp;
 		if (feof(f)) break;
 		temp = *serial;
 	} while (1);
-	*serial = (*serial)->adress;
+	*serial = (*serial)->next;
 	fclose(f);
 	printf("Info from file is successfully read!\n");
 }
@@ -493,7 +493,7 @@ void readBinFile(struct Series** serial)
 		}
 		fgetpos(f, &pos);
 		rightRegister(*serial);
-		(*serial)->adress = temp;
+		(*serial)->next = temp;
 		temp = *serial;
 		if (pos == end) break;
 	} while (1);
@@ -506,9 +506,9 @@ void reverse (struct Series** serial)
 	struct Series* temp2 = *serial;
 	while (temp)
 	{
-		if (temp->adress == NULL)
+		if (temp->next == NULL)
 			*serial = temp; 
-		temp = temp->adress;
+		temp = temp->next;
 	}
 	struct Series* temp3 = *serial; //указатель на ласт элементе
 	while (1)
@@ -516,17 +516,17 @@ void reverse (struct Series** serial)
 		temp = temp2; //указатель на начале
 		while (1)
 		{
-			if (temp->adress == temp3) //если элемент указывает на ласт
+			if (temp->next == temp3) //если элемент указывает на ласт
 			{
-				temp3->adress = temp; //теперь ласт указывает на то, что на него указывало
-				temp3 = temp3->adress; //теперь то что указывало это последнее
+				temp3->next = temp; //теперь ласт указывает на то, что на него указывало
+				temp3 = temp3->next; //теперь то что указывало это последнее
 				break;
 			}
-			temp = temp->adress;
+			temp = temp->next;
 		}
 		if (temp3 == temp2) //если последний совпал с началом
 		{
-			temp3->adress = NULL;
+			temp3->next = NULL;
 			break;
 		}
 	}
