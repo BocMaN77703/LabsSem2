@@ -331,14 +331,6 @@ void search(struct Series* serial)
 	}
 	if (flag == 0) printf("Nothing found...Try again.\n");
 }
-void fprintLine(FILE* f)
-{
-	for (int i = 0; i < 85; i++)
-	{
-		fprintf(f,"%c", '_');
-	}
-	fprintf(f,"\n");
-}
 void clear(struct Series** serial)
 {
 	while (*serial != NULL)
