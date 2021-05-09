@@ -51,7 +51,7 @@ void add(struct Series** serial)
 			system("CLS");
 			printf("Incorrect value! try again...\n");
 		}
-		printf("Enter '1' to enter releae date or '2' to enter number of seasons: ");
+		printf("Enter '1' to enter release date or '2' to enter number of seasons: ");
 		while (!scanf_s("%d", &(*serial)->isType) || ((*serial)->isType < 1) || ((*serial)->isType > 2))
 		{
 			rewind(stdin);
@@ -287,7 +287,11 @@ void search(struct Series* serial)
 		str[strlen(str) - 1] = '\0';
 		do
 		{
-			if (serial->isType != 1)	serial = serial->next;
+			if (serial->isType != 1)
+			{
+				serial = serial->next;
+				continue;
+			}
 			int temp = 0;
 			if (strlen(serial->info.date) == strlen(str))
 			{
@@ -314,7 +318,11 @@ void search(struct Series* serial)
 		}
 		do
 		{
-			if (serial->isType != 2) continue;
+			if (serial->isType != 2)
+			{
+				serial = serial->next;
+				continue;
+			}
 			if (serial->info.seasons == intToSearch)
 			{
 				print(serial,1);
@@ -350,7 +358,7 @@ void write(struct Series* serial)
 	}
 	printf("Choose type of file:\n1)Text file(.txt)\n2)Binary file(.bin)\n3)Exit\n");
 	int choice;
-	while (!scanf_s("%d", &choice) || (choice < 1) || (choice > 2))
+	while (!scanf_s("%d", &choice) || (choice < 1) || (choice > 3))
 	{
 		printf("Incorrect value. Try again.\n");
 		rewind(stdin);
