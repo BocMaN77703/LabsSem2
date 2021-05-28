@@ -2,3 +2,5 @@
 2 6 5 Blinders
 1 15 20000101 Brigada
 2 13 4 13 Reasons Why
+2 60 5 Breaking Bad
+2 2 2 Qqq
