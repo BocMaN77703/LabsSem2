@@ -121,8 +121,7 @@ void show(struct Tree* root)
 		printf("Binary tree is empty...\n");
 		return;
 	}
-	int pr = 1;            
-											
+	int pr = 1;   										
 	temp = (struct Stack*)calloc(1, sizeof(struct Stack)); 
 	temp->tree = root;                            
 	temp->stack = temp1;                             
@@ -155,80 +154,150 @@ void show(struct Tree* root)
 										
 	}
 }
-void del(struct Tree** root)
+//void del(struct Tree** root)
+//{
+//	if (!*root)
+//	{
+//		puts("Binary tree is empty...\n");
+//		return;
+//	}
+//	struct Tree* temp1, * temp2, * temp3, *temp4;
+//	char str[20];                 
+//	int compare;                    
+//	int flag;
+//	rewind(stdin);
+//	puts("Enter word to delete: ");
+//	fgets(str, 20, stdin);
+//	rewind(stdin);
+//	str[strlen(str) - 1] = '\0';
+//	temp2 = temp1 = *root;          
+//	flag = 0; int flg2 = 0;
+//	do                        
+//	{
+//		if (!(compare = strcmp(str, temp1->word)))
+//		{
+//			flag = 1;
+//		}
+//		if (compare < 0)              
+//		{
+//			if (temp1->left)       
+//			{
+//				temp2 = temp1;    
+//				temp1 = temp1->left; 
+//			}
+//			else flag = 1;     
+//		}
+//		if (compare > 0)          
+//		{
+//			if (temp1->right)
+//			{
+//				temp2 = temp1;      
+//				temp1 = temp1->right;   
+//			}
+//			else flag = 1;     
+//		}
+//	} while (!flag);
+//	if (temp1 == *root)	flg2 = 1;
+//	if (compare)
+//	{
+//		puts("Not found...\n");
+//		return;
+//	}
+//	else
+//	{
+//		if (flg2 = 1)
+//		{
+//			if (temp1->right)
+//			{
+//				if (temp1->left==NULL)
+//				{
+//					*root = temp1->right;
+//					free(temp1);
+//					return;
+//				}
+//				temp4 = temp2 = temp1->right;
+//				temp3 = temp1->left;
+//				while (temp2->left)
+//				{
+//					temp2 = temp2->left;
+//				}
+//				temp2->left = temp3;
+//				*root = temp4;
+//			}
+//			else	*root = temp1->left;
+//			if(!temp1->left)
+//			free(temp1);
+//			return;
+//		}
+//		compare = strcmp(temp1->word, temp2->word);
+//		temp3 = temp1;            
+//		if (compare < 0)               
+//		{
+//			if (temp1->right)           
+//			{
+//				temp3 = temp1->right;     
+//				while (temp3->left) temp3 = temp3->left; 
+//				temp2->left = temp1->right;  
+//				temp3->left = temp1->left;
+//			}
+//			else temp2->left = temp1->left; 
+//		}
+//		else                  
+//		{
+//			if (temp1->left)          
+//			{
+//				temp3 = temp1->left;        
+//				while (temp3->right) temp3 = temp3->right;
+//				temp2->right = temp1->left;    
+//				temp3->right = temp1->right;
+//			}
+//			else temp2->right = temp1->right;  
+//		}
+//		free(temp1);
+//	}
+//}
+struct Tree* del(struct Tree* rootOfTree, char* compare)
 {
-	if (!*root)
-	{
-		puts("Binary tree is empty...\n");
-		return;
-	}
-	struct Tree* temp1, * temp2, * temp3;
-	char str[20];                 
-	int compare;                    
-	int flag;
-	rewind(stdin);
-	puts("Enter word to delete: ");
-	fgets(str, 20, stdin);
-	rewind(stdin);
-	str[strlen(str) - 1] = '\0';
-	temp2 = temp1 = *root;          
-	flag = 0;                  
-	do                        
-	{
-		if (!(compare = strcmp(str, temp1->word)))
-			flag = 1;          
-		if (compare < 0)              
+
+	if (rootOfTree == NULL)
+		return rootOfTree;
+
+	if (strcmp(compare, rootOfTree->word) == 0) {
+
+		struct Tree* temp = NULL;
+		if (rootOfTree->right == NULL)
+			temp = rootOfTree->left;
+		else
 		{
-			if (temp1->left)       
+			struct Tree* pointer = rootOfTree->right;
+			if (pointer->left == NULL)
 			{
-				temp2 = temp1;    
-				temp1 = temp1->left; 
+				pointer->left = rootOfTree->left;
+				temp = pointer;
 			}
-			else flag = 1;     
-		}
-		if (compare > 0)          
-		{
-			if (temp1->right)
+			else
 			{
-				temp2 = temp1;      
-				temp1 = temp1->right;   
+				struct Tree* minimal = pointer->left;
+				while (minimal->left != NULL)
+				{
+					pointer = minimal;
+					minimal = pointer->left;
+				}
+				pointer->left = minimal->right;
+				minimal->left = rootOfTree->left;
+				minimal->right = rootOfTree->right;
+				temp = pointer;
 			}
-			else flag = 1;     
 		}
-	} while (!flag);
-	if (compare)
-	{
-		puts("Not found...\n");
-		return;
+		free(rootOfTree);
+		return temp;
 	}
+	else if (strcmp(compare, rootOfTree->word) < 0)
+		rootOfTree->left = del(rootOfTree->left, compare);
 	else
-	{
-		compare = strcmp(temp1->word, temp2->word);
-		temp3 = temp1;            
-		if (compare < 0)               
-		{
-			if (temp1->right)           
-			{
-				temp3 = temp1->right;     
-				while (temp3->left) temp3 = temp3->left; 
-				temp2->left = temp1->right;  
-				temp3->left = temp1->left;
-			}
-			else temp2->left = temp1->left; 
-		}
-		else                  
-		{
-			if (temp1->left)          
-			{
-				temp3 = temp1->left;        
-				while (temp3->right) temp3 = temp3->right;
-				temp2->right = temp1->left;    
-				temp3->right = temp1->right;
-			}
-			else temp2->right = temp1->right;  
-		}
-		free(temp1);
-	}
+		rootOfTree->right = del(rootOfTree->left, compare);
+	return rootOfTree;
+
 }
 void clean(struct Tree** root)
 {
