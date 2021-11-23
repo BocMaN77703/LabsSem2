@@ -295,7 +295,7 @@ struct Tree* del(struct Tree* rootOfTree, char* compare)
 	else if (strcmp(compare, rootOfTree->word) < 0)
 		rootOfTree->left = del(rootOfTree->left, compare);
 	else
-		rootOfTree->right = del(rootOfTree->left, compare);
+		rootOfTree->right = del(rootOfTree->right, compare);
 	return rootOfTree;
 
 }
